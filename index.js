@@ -4,6 +4,7 @@ var pd      = require('pretty-data').pd;
 var gutil   = require('gulp-util');
 var path    = require('path');
 var through = require('through2');
+var chalk   = require('chalk');
 
 module.exports = function (opts) {
 
@@ -14,7 +15,7 @@ module.exports = function (opts) {
   opts.preserveComments = opts.hasOwnProperty('preserveComments') ? opts.preserveComments : false;
   opts.verbose = process.argv.indexOf('--verbose') !== -1;
 
-  var validExts    = ['xml', 'json', 'css', 'sql'];
+  var validExts    = ['xml', 'svg', 'json', 'css', 'sql'];
   var methodSuffix = opts.type === 'minify' ? 'min' : '';
 
   return through.obj(function (file, enc, cb) {
@@ -41,6 +42,7 @@ module.exports = function (opts) {
     }
 
     try {
+      fileExt = (fileExt === 'svg') ? 'xml' : fileExt;
       file.contents = new Buffer(pd[fileExt+methodSuffix](String(file.contents), opts.preserveComments));
     } catch (err) {
       return cb(new gutil.PluginError('gulp-pretty-data', err, opts));
